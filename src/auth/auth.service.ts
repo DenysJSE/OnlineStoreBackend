@@ -15,9 +15,18 @@ export class AuthService {
     private userService: UserService
   ) {}
 
+  async login (dto: AuthDto) {
+    const user = await this.validateUser(dto)
+    const tokens = await this.issueTokens(user.id)
+
+    return {
+      user: this.returnUserFields(user),
+      ...tokens
+    }
+  }
+
   async register(dto: AuthDto) {
     const existUser = await this.userService.getUserByEmail(dto.email)
-
     if (existUser) throw new BadRequestException('User with such email already exist!')
 
     const user = await this.prisma.user.create({
@@ -29,7 +38,6 @@ export class AuthService {
         password: await bcrypt.hash(dto.password, 10)
       }
     })
-
     const tokens = await this.issueTokens(user.id)
 
     return {
@@ -42,19 +50,9 @@ export class AuthService {
     const result = await this.jwt.verifyAsync(refreshToken)
     if (!result) throw new BadRequestException('Invalid token')
 
-    const user = await this.userService.getUserById(result.id)
+    const user = await this.userService.getUserById(result.id, {isAdmin: true})
     if (!user) throw new BadRequestException('User with such id was not found!')
 
-    const tokens = await this.issueTokens(user.id)
-
-    return {
-      user: this.returnUserFields(user),
-      ...tokens
-    }
-  }
-
-  async login (dto: AuthDto) {
-    const user = await this.validateUser(dto)
     const tokens = await this.issueTokens(user.id)
 
     return {
@@ -77,20 +75,19 @@ export class AuthService {
     return {accessToken, refreshToken}
   }
 
-  private returnUserFields(user: User) {
+  private returnUserFields(user: Partial<User>) {
     return {
       id: user.id,
       email: user.email,
+      isAdmin: user.isAdmin
     }
   }
 
   private async validateUser (dto: AuthDto) {
     const user = await this.userService.getUserByEmail(dto.email)
-
     if (!user) throw new BadRequestException('User with such email was not found!')
 
     const isValid = await bcrypt.compare(dto.password, user.password)
-
     if (!isValid) throw new BadRequestException('Invalid password')
 
     return user

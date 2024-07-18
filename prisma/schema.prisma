@@ -21,6 +21,8 @@ model User {
   email    String @unique
   password String
 
+  isAdmin Boolean @default(false) @map("is_admin")
+
   name       String @unique
   avatarPath String @default("/uploads/default-avatar.png") @map("avatar_path")
 

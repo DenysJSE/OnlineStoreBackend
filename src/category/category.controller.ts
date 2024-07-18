@@ -24,7 +24,7 @@ export class CategoryController {
   }
 
   @Get(':id')
-  @Auth()
+  @Auth('admin')
   async getById(@Param('id') id: string) {
     return this.categoryService.getCategoryById(+id)
   }
@@ -35,7 +35,7 @@ export class CategoryController {
   }
 
   @HttpCode(200)
-  @Auth()
+  @Auth('admin')
   @Post()
   async createCategory() {
     return this.categoryService.createCategory()
@@ -43,14 +43,14 @@ export class CategoryController {
 
   @UsePipes(new ValidationPipe())
   @HttpCode(200)
-  @Auth()
+  @Auth('admin')
   @Put(':id')
   async updateProfile(@Body() dto: CategoryDto, @Param('id') categoryId: string) {
     return this.categoryService.updateCategory(+categoryId, dto)
   }
 
   @HttpCode(200)
-  @Auth()
+  @Auth('admin')
   @Delete(':id')
   async deleteCategory(@Param('id') categoryId: string) {
     return this.categoryService.deleteCategory(+categoryId)

@@ -8,8 +8,8 @@ export class StatisticController {
   constructor(private readonly statisticService: StatisticService) {}
 
   @Get('main')
-  @Auth()
-  getMainStatistics(@CurrentUser('id') userId: number) {
-    return this.statisticService.getMain(userId)
+  @Auth('admin')
+  getMainStatistics() {
+    return this.statisticService.getMain()
   }
 }

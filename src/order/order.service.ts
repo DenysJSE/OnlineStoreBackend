@@ -2,12 +2,32 @@ import { Injectable } from '@nestjs/common';
 import {PrismaService} from "../prisma.service";
 import {returnProductObject} from "../product/return-product.object";
 import {OrderDto} from "./dto/order.dto";
+import {UserService} from "../user/user.service";
 
 @Injectable()
 export class OrderService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private userService: UserService) {}
 
-  async getAll(userId: number) {
+  async getAll() {
+    return this.prisma.order.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: returnProductObject
+            }
+          }
+        }
+      }
+    })
+  }
+
+  async getByUserId(userId: number) {
+    await this.userService.getUserById(userId)
+
     return this.prisma.order.findMany({
       where: {userId},
       orderBy: {

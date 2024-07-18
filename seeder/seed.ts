@@ -20,7 +20,7 @@ const createProduct = async (quantity: number) => {
         slug: generateSlug(productName),
         description: faker.commerce.productDescription(),
         price: +faker.commerce.price(10, 999, 0),
-        images: Array.from({length: getRandomNumber(2, 6)}).map(() => faker.image.imageUrl(500, 500)),
+        images: Array.from({length: getRandomNumber(2, 6)}).map(() => `/uploads/${faker.number.int({min: 1, max: 8})}.jpg`),
         category: {
           create: {
             name: categoryName,
@@ -30,12 +30,12 @@ const createProduct = async (quantity: number) => {
         reviews: {
           create: [
             {
-              rating: faker.datatype.number({min: 1, max: 5}),
+              rating: faker.number.int({min: 1, max: 5}),
               text: faker.lorem.paragraph(),
               user: {connect: {id: 1}}
             },
             {
-              rating: faker.datatype.number({min: 1, max: 5}),
+              rating: faker.number.int({min: 1, max: 5}),
               text: faker.lorem.paragraph(),
               user: {connect: {id: 1}}
             }
@@ -52,7 +52,7 @@ const createProduct = async (quantity: number) => {
 
 async function main() {
   console.log('Start seeding...')
-  await createProduct(50)
+  await createProduct(10)
 }
 
 main()
