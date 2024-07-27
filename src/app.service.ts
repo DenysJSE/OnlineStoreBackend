@@ -8,5 +8,5 @@ export class AppService {
 
   test() {}
 
-  test2() {}
+  test3() {}
 }
