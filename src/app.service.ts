@@ -7,4 +7,6 @@ export class AppService {
   }
 
   test() {}
+
+  test3() {}
 }
